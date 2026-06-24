@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lovart Prompt Translator Preview</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #eef0f4;
+    }
+  </style>
+</head>
+<body>
+  <textarea style="position: fixed; left: 24px; bottom: 24px; width: 420px; height: 120px;">一个未来感产品海报，冷静的商业摄影风格，干净背景，高级材质</textarea>
+  <script>
+    window.__menus = {};
+    window.GM_addStyle = function (css) {
+      const style = document.createElement("style");
+      style.textContent = css;
+      document.head.appendChild(style);
+    };
+    window.GM_getValue = function () {
+      return {
+        provider: "volcengine",
+        volcengineRegion: "cn-north-1",
+        keepStructure: true,
+        autoOpenCompare: true
+      };
+    };
+    window.GM_setValue = function () {};
+    window.GM_xmlhttpRequest = function () {};
+    window.GM_registerMenuCommand = function (name, callback) {
+      window.__menus[name] = callback;
+    };
+  </script>
+  <script src="./lovart-prompt-translator.user.js"></script>
+  <script>
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        window.__menus["Lovart 翻译设置"]();
+      }, 80);
+    });
+  </script>
+</body>
+</html>
