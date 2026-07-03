@@ -6,6 +6,12 @@ const scriptPath = path.join(__dirname, "lovart-prompt-translator.user.js");
 const source = fs.readFileSync(scriptPath, "utf8");
 
 assert.match(source, /@connect\s+translate\.volcengineapi\.com/, "missing Volcengine @connect host");
+assert.match(source, /@version\s+0\.2\.10/, "version must be bumped for userscript updates");
+assert.match(source, /@match\s+https:\/\/www\.runninghub\.cn\/\*/, "missing RunningHub @match host");
+assert.match(source, /@match\s+https:\/\/www\.pinterest\.com\/\*/, "missing Pinterest @match host");
+assert.match(source, /const AUTO_SHOW_TOOLBAR_HOSTS/, "missing host detection for auto toolbar display");
+assert.match(source, /AUTO_SHOW_TOOLBAR_HOSTS\.has\(window\.location\.hostname\)/, "toolbar should detect supported hosts");
+assert.match(source, /if \(shouldShowToolbarOnLoad\(\)\) \{\s*showToolbar\(\);\s*\}/, "supported hosts should show the toolbar on load");
 assert.match(source, /provider:\s*"volcengine"/, "missing Volcengine provider option");
 assert.match(source, /volcengineAccessKeyId/, "missing Volcengine Access Key config");
 assert.match(source, /volcengineSecretAccessKey/, "missing Volcengine Secret Key config");

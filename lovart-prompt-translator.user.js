@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Lovart Prompt Translator
 // @namespace    https://lovart.ai/
-// @version      0.2.9
-// @description  Translate, compare, edit, and refill Chinese/English prompts in Lovart input boxes.
+// @version      0.2.10
+// @description  Translate, compare, edit, and refill Chinese/English prompts in prompt input boxes.
 // @author       Codex
 // @homepageURL  https://github.com/wsbjj/lovart-prompt-translator
 // @supportURL   https://github.com/wsbjj/lovart-prompt-translator/issues
@@ -11,6 +11,8 @@
 // @match        https://lovart.ai/*
 // @match        https://www.lovart.ai/*
 // @match        https://*.lovart.ai/*
+// @match        https://www.runninghub.cn/*
+// @match        https://www.pinterest.com/*
 // @run-at       document-idle
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
@@ -33,6 +35,10 @@
   const CONTENT_EDITABLE_SELECTOR = '[contenteditable]:not([contenteditable="false"])';
   const REAL_EDITABLE_SELECTOR = `${CONTENT_EDITABLE_SELECTOR}, textarea, input`;
   const EDITABLE_SELECTOR = `${REAL_EDITABLE_SELECTOR}, [role="textbox"]`;
+  const AUTO_SHOW_TOOLBAR_HOSTS = new Set([
+    "www.runninghub.cn",
+    "www.pinterest.com"
+  ]);
 
   const DEFAULT_CONFIG = {
     provider: "volcengine",
@@ -579,11 +585,18 @@
     bindSelectionTracking();
     window.addEventListener("resize", applyToolbarState);
     registerMenus();
+    if (shouldShowToolbarOnLoad()) {
+      showToolbar();
+    }
   }
 
   function registerMenus() {
-    GM_registerMenuCommand("Lovart 翻译设置", openSettingsModal);
-    GM_registerMenuCommand("Lovart 翻译当前输入框", () => translateActive("auto"));
+    GM_registerMenuCommand("提示词翻译设置", openSettingsModal);
+    GM_registerMenuCommand("翻译当前输入框", () => translateActive("auto"));
+  }
+
+  function shouldShowToolbarOnLoad() {
+    return AUTO_SHOW_TOOLBAR_HOSTS.has(window.location.hostname);
   }
 
   function loadConfig() {
