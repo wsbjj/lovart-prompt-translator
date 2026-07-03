@@ -6,9 +6,16 @@ const scriptPath = path.join(__dirname, "lovart-prompt-translator.user.js");
 const source = fs.readFileSync(scriptPath, "utf8");
 
 assert.match(source, /@connect\s+translate\.volcengineapi\.com/, "missing Volcengine @connect host");
-assert.match(source, /@version\s+0\.2\.10/, "version must be bumped for userscript updates");
+assert.match(source, /@version\s+0\.2\.11/, "version must be bumped for userscript updates");
 assert.match(source, /@match\s+https:\/\/www\.runninghub\.cn\/\*/, "missing RunningHub @match host");
 assert.match(source, /@match\s+https:\/\/www\.pinterest\.com\/\*/, "missing Pinterest @match host");
+assert.match(source, /@noframes/, "script should not run inside iframes and create duplicate toolbars");
+assert.match(source, /function shouldRunInCurrentWindow/, "missing top-window run gate");
+assert.match(source, /window\.top\s*===\s*window\.self/, "run gate must only allow the top window");
+assert.match(source, /function claimDocumentInstance/, "missing per-document singleton guard");
+assert.match(source, /INSTANCE_MARKER_ID/, "missing singleton marker id");
+assert.match(source, /document\.getElementById\(INSTANCE_MARKER_ID\)/, "singleton guard must detect an existing script instance");
+assert.match(source, /document\.getElementById\(`\$\{SCRIPT_ID\}-toolbar`\)/, "singleton guard must detect an existing toolbar");
 assert.match(source, /const AUTO_SHOW_TOOLBAR_HOSTS/, "missing host detection for auto toolbar display");
 assert.match(source, /AUTO_SHOW_TOOLBAR_HOSTS\.has\(window\.location\.hostname\)/, "toolbar should detect supported hosts");
 assert.match(source, /if \(shouldShowToolbarOnLoad\(\)\) \{\s*showToolbar\(\);\s*\}/, "supported hosts should show the toolbar on load");

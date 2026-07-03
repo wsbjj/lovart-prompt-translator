@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Lovart Prompt Translator
 // @namespace    https://lovart.ai/
-// @version      0.2.10
+// @version      0.2.11
 // @description  Translate, compare, edit, and refill Chinese/English prompts in prompt input boxes.
 // @author       Codex
 // @homepageURL  https://github.com/wsbjj/lovart-prompt-translator
@@ -14,6 +14,7 @@
 // @match        https://www.runninghub.cn/*
 // @match        https://www.pinterest.com/*
 // @run-at       document-idle
+// @noframes
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -32,6 +33,7 @@
 
   const SCRIPT_ID = "lovart-prompt-translator";
   const STORE_KEY = "lovartPromptTranslatorConfig";
+  const INSTANCE_MARKER_ID = `${SCRIPT_ID}-instance-marker`;
   const CONTENT_EDITABLE_SELECTOR = '[contenteditable]:not([contenteditable="false"])';
   const REAL_EDITABLE_SELECTOR = `${CONTENT_EDITABLE_SELECTOR}, textarea, input`;
   const EDITABLE_SELECTOR = `${REAL_EDITABLE_SELECTOR}, [role="textbox"]`;
@@ -39,6 +41,10 @@
     "www.runninghub.cn",
     "www.pinterest.com"
   ]);
+
+  if (!shouldRunInCurrentWindow() || !claimDocumentInstance()) {
+    return;
+  }
 
   const DEFAULT_CONFIG = {
     provider: "volcengine",
@@ -575,6 +581,27 @@
   `);
 
   init();
+
+  function shouldRunInCurrentWindow() {
+    try {
+      return window.top === window.self;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function claimDocumentInstance() {
+    if (!document.documentElement) return false;
+    if (document.getElementById(INSTANCE_MARKER_ID)) return false;
+    if (document.getElementById(`${SCRIPT_ID}-toolbar`)) return false;
+
+    const marker = document.createElement("span");
+    marker.id = INSTANCE_MARKER_ID;
+    marker.hidden = true;
+    marker.setAttribute("aria-hidden", "true");
+    document.documentElement.appendChild(marker);
+    return true;
+  }
 
   function init() {
     createToolbar();
